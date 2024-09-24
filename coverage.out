@@ -1,0 +1,23 @@
+mode: set
+score/score.go:28.13,31.32 2 0
+score/score.go:31.32,33.3 1 0
+score/score.go:35.2,37.84 3 0
+score/score.go:40.57,45.65 4 0
+score/score.go:45.65,47.3 1 0
+score/score.go:49.2,50.42 2 0
+score/score.go:50.42,52.3 1 0
+score/score.go:54.2,62.3 2 0
+score/score.go:65.33,74.40 4 0
+score/score.go:74.40,77.3 2 0
+score/score.go:79.2,79.16 1 0
+score/score.go:94.58,95.26 1 1
+score/score.go:95.26,97.3 1 1
+score/score.go:99.2,99.35 1 1
+score/score.go:99.35,101.3 1 1
+score/score.go:103.2,103.52 1 1
+score/score.go:103.52,105.3 1 1
+score/score.go:107.2,108.19 2 1
+score/score.go:108.19,110.39 2 1
+score/score.go:110.39,112.4 1 1
+score/score.go:112.9,114.4 1 1
+score/score.go:116.2,116.31 1 1

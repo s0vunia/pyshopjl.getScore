@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>score: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">score/score.go (36.1%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "fmt"
+        "math"
+        "math/rand"
+        "time"
+)
+
+const TIMESTAMPS_COUNT = 50000
+
+const PROBABILITY_SCORE_CHANGED = 0.0001
+
+const PROBABILITY_HOME_SCORE = 0.55
+
+const OFFSET_MAX_STEP = 3
+
+type Score struct {
+        Home int
+        Away int
+}
+
+type ScoreStamp struct {
+        Offset int
+        Score  Score
+}
+
+func main() <span class="cov0" title="0">{
+        var stamps = fillScores()
+
+        for _, stamp := range *stamps </span><span class="cov0" title="0">{
+                fmt.Printf("%v: %v -- %v\n", stamp.Offset, stamp.Score.Home, stamp.Score.Away)
+        }</span>
+
+        <span class="cov0" title="0">testOffset := 0
+        result := getScore(*stamps, testOffset)
+        fmt.Printf("Score at offset %d: %v -- %v\n", testOffset, result.Home, result.Away)</span>
+}
+
+func generateStamp(previousValue ScoreStamp) ScoreStamp <span class="cov0" title="0">{
+        random := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+        scoreChanged := random.Float32() &gt; 1-PROBABILITY_SCORE_CHANGED
+        homeScoreChange := 0
+        if scoreChanged &amp;&amp; random.Float32() &gt; 1-PROBABILITY_HOME_SCORE </span><span class="cov0" title="0">{
+                homeScoreChange = 1
+        }</span>
+
+        <span class="cov0" title="0">awayScoreChange := 0
+        if scoreChanged &amp;&amp; homeScoreChange == 0 </span><span class="cov0" title="0">{
+                awayScoreChange = 1
+        }</span>
+
+        <span class="cov0" title="0">offsetChange := int(math.Floor(random.Float64()*OFFSET_MAX_STEP)) + 1
+
+        return ScoreStamp{
+                Offset: previousValue.Offset + offsetChange,
+                Score: Score{
+                        Home: previousValue.Score.Home + homeScoreChange,
+                        Away: previousValue.Score.Away + awayScoreChange,
+                },
+        }</span>
+}
+
+func fillScores() *[]ScoreStamp <span class="cov0" title="0">{
+
+        scores := make([]ScoreStamp, TIMESTAMPS_COUNT)
+        prevScore := ScoreStamp{
+                Offset: 0,
+                Score:  Score{Home: 0, Away: 0},
+        }
+        scores[0] = prevScore
+
+        for i := 1; i &lt; TIMESTAMPS_COUNT; i++ </span><span class="cov0" title="0">{
+                scores[i] = generateStamp(prevScore)
+                prevScore = scores[i]
+        }</span>
+
+        <span class="cov0" title="0">return &amp;scores</span>
+}
+
+// getScore returns the score at a given offset in the game.
+// It handles cases where the exact offset may not exist in the game stamps.
+//
+// Parameters:
+//   - gameStamps: A slice of ScoreStamp representing the game's score history.
+//   - offset: An integer representing the time offset to query.
+//
+// Returns:
+//
+//        A Score struct containing the home and away scores at the given offset.
+//
+// Time complexity: O(log n), Space complexity: O(1), where n is the number of game stamps.
+func getScore(gameStamps []ScoreStamp, offset int) Score <span class="cov8" title="1">{
+        if len(gameStamps) == 0 </span><span class="cov8" title="1">{
+                return Score{Home: 0, Away: 0}
+        }</span>
+
+        <span class="cov8" title="1">if offset &lt; gameStamps[0].Offset </span><span class="cov8" title="1">{
+                return Score{Home: 0, Away: 0}
+        }</span>
+
+        <span class="cov8" title="1">if offset &gt;= gameStamps[len(gameStamps)-1].Offset </span><span class="cov8" title="1">{
+                return gameStamps[len(gameStamps)-1].Score
+        }</span>
+
+        <span class="cov8" title="1">left, right := 0, len(gameStamps)-1
+        for left &lt; right </span><span class="cov8" title="1">{
+                mid := left + (right-left+1)/2
+                if gameStamps[mid].Offset &lt;= offset </span><span class="cov8" title="1">{
+                        left = mid
+                }</span> else<span class="cov8" title="1"> {
+                        right = mid - 1
+                }</span>
+        }
+        <span class="cov8" title="1">return gameStamps[left].Score</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
